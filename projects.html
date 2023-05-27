@@ -10,7 +10,7 @@
     <div class="links">
       <ul id="file list">
         <li>
-          <a href="/projects/createTable.ipynb" target="_blank">createTable</a>
+          <a href="javascript:void(0)" onclick="displayFileContent('/projects/createTable.ipynb')">createTable</a>
         </li>
         <li>
           <a href="/projects/csv_cleaning.ipynb" target="_blank">csv_cleaning</a>
@@ -28,5 +28,43 @@
     <p>This webpage was generated using ChatGPT, an AI language model developed by OpenAI.</p>
     <p>Please note that the content on this page is fictional and for demonstration purposes only.</p>
   </div>
+
+  <script>
+    // AJAX 요청 함수
+    function getFileContent(filePath) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', filePath);
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            resolve(xhr.responseText);
+          } else {
+            reject(xhr.statusText);
+          }
+        };
+        xhr.onerror = () => {
+          reject(xhr.statusText);
+        };
+        xhr.send();
+      });
+    }
+
+    // 파일 내용을 가져와서 표시
+    function displayFileContent(filePath) {
+      const fileContentDiv = document.querySelector('.file-content');
+      fileContentDiv.innerHTML = '';
+
+      getFileContent(filePath)
+        .then(content => {
+          const pre = document.createElement('pre');
+          pre.textContent = content.slice(0, 500); // 첫 500자만 표시 (원하는 길이로 변경 가능)
+          fileContentDiv.appendChild(pre);
+        })
+        .catch(error => {
+          console.error('An error occurred:', error);
+          fileContentDiv.textContent = 'Failed to load file.';
+        });
+    }
+  </script>
 </body>
 </html>

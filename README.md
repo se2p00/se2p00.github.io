@@ -188,4 +188,5 @@ To add a custom directory to your theme-gem, please edit the regexp in `jekyll-d
 The theme is available as open source under the terms of the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0).
 =======
 # se2p00.github.io
->>>>>>> c6296e9 (Initial commit)
+
+안녕하세요. ^^

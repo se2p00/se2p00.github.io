@@ -59,9 +59,25 @@
 
       getFileContent(filePath)
         .then(content => {
-          const pre = document.createElement('pre');
-          pre.textContent = content; // 전체 파일 내용을 표시
-          fileContentDiv.appendChild(pre);
+          const notebookData = JSON.parse(content);
+          const cells = notebookData.cells;
+
+          cells.forEach(cell => {
+            const cellDiv = document.createElement('div');
+            cellDiv.classList.add('cell');
+
+            if (cell.cell_type === 'code') {
+              const codePre = document.createElement('pre');
+              codePre.textContent = cell.source.join('');
+              cellDiv.appendChild(codePre);
+            } else if (cell.cell_type === 'markdown') {
+              const markdownDiv = document.createElement('div');
+              markdownDiv.innerHTML = marked(cell.source.join(''));
+              cellDiv.appendChild(markdownDiv);
+            }
+
+            fileContentDiv.appendChild(cellDiv);
+          });
         })
         .catch(error => {
           console.error('An error occurred:', error);

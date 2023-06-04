@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>IRUSLAB의 홈페이지</title>
 </head>
+
 <body>
   <div class="container">
     <h1>어서오세요!</h1>
@@ -58,7 +60,7 @@
       getFileContent(filePath)
         .then(content => {
           const pre = document.createElement('pre');
-          pre.textContent = content.slice(0, 500); // 첫 500자만 표시 (원하는 길이로 변경 가능)
+          pre.textContent = content; // 전체 파일 내용을 표시
           fileContentDiv.appendChild(pre);
         })
         .catch(error => {
@@ -66,6 +68,8 @@
           fileContentDiv.textContent = 'Failed to load file.';
         });
     }
+
   </script>
 </body>
+
 </html>

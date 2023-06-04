@@ -3,7 +3,6 @@
 
 <head>
   <title>IRUSLAB의 홈페이지</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
@@ -13,16 +12,16 @@
     <div class="links">
       <ul id="file list">
         <li>
-          <a href="javascript:void(0)" onclick="displayFileContent('/projects/createTable.ipynb')">createTable</a>
+          <a href="https://se2p00.github.io/projects/createTable.html" target="_blank">createTable</a>
         </li>
         <li>
-          <a href="javascript:void(0)" onclick="displayFileContent('/projects/csv_cleaning.ipynb')">csv_cleaning</a>
+          <a href="https://se2p00.github.io/projects/csv_cleaning.html" target="_blank">csv_cleaning</a>
         </li>
         <li>
-          <a href="javascript:void(0)" onclick="displayFileContent('/projects/selenium_prac.ipynb')">selenium_prac</a>
+          <a href="https://se2p00.github.io/projects/pandas_prac.html" target="_blank">pandas_prac</a>
         </li>
         <li>
-          <a href="https://se2p00.github.io/projects/pandas_prac.html" target="_blank">pandas_prac.ipynb</a>
+          <a href="https://se2p00.github.io/projects/selenium_prac.html" target="_blank">selenium_prac</a>
         </li>
       </ul>
     </div>
@@ -32,61 +31,6 @@
     <p>This webpage was generated using ChatGPT, an AI language model developed by OpenAI.</p>
     <p>Please note that the content on this page is fictional and for demonstration purposes only.</p>
   </div>
-
-  <script>
-    // AJAX 요청 함수
-    function getFileContent(filePath) {
-      return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', filePath);
-        xhr.onload = () => {
-          if (xhr.status === 200) {
-            resolve(xhr.responseText);
-          } else {
-            reject(xhr.statusText);
-          }
-        };
-        xhr.onerror = () => {
-          reject(xhr.statusText);
-        };
-        xhr.send();
-      });
-    }
-
-    // 파일 내용을 가져와서 표시
-    function displayFileContent(filePath) {
-      const fileContentDiv = document.querySelector('.file-content');
-      fileContentDiv.innerHTML = '';
-
-      getFileContent(filePath)
-        .then(content => {
-          const notebookData = JSON.parse(content);
-          const cells = notebookData.cells;
-
-          cells.forEach(cell => {
-            const cellDiv = document.createElement('div');
-            cellDiv.classList.add('cell');
-
-            if (cell.cell_type === 'code') {
-              const codePre = document.createElement('pre');
-              codePre.textContent = cell.source.join('');
-              cellDiv.appendChild(codePre);
-            } else if (cell.cell_type === 'markdown') {
-              const markdownDiv = document.createElement('div');
-              markdownDiv.innerHTML = marked(cell.source.join(''));
-              cellDiv.appendChild(markdownDiv);
-            }
-
-            fileContentDiv.appendChild(cellDiv);
-          });
-        })
-        .catch(error => {
-          console.error('An error occurred:', error);
-          fileContentDiv.textContent = 'Failed to load file.';
-        });
-    }
-
-  </script>
 </body>
 
 </html>

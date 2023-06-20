@@ -3,7 +3,7 @@
 <head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>csv_cleaning</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>csv_cleaning2</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 
 
 
@@ -15101,9 +15101,177 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
     }
     init_mathjax();
     </script>
-    <!-- End of mathjax configuration --></head>
+    <!-- End of mathjax configuration --><script type="module">
+  document.addEventListener("DOMContentLoaded", async () => {
+    const diagrams = document.querySelectorAll(".jp-Mermaid > pre.mermaid");
+    // do not load mermaidjs if not needed
+    if (!diagrams.length) {
+      return;
+    }
+    const mermaid = (await import("https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.2.3/mermaid.esm.min.mjs")).default;
+
+    mermaid.initialize({
+      maxTextSize: 100000,
+      startOnLoad: false,
+      fontFamily: window
+        .getComputedStyle(document.body)
+        .getPropertyValue("--jp-ui-font-family"),
+      theme: document.querySelector("body[data-jp-theme-light='true']")
+        ? "default"
+        : "dark",
+    });
+
+    let _nextMermaidId = 0;
+
+    function makeMermaidImage(svg) {
+      const img = document.createElement('img');
+      const maxWidth = svg.match(/max-width: (\d+)/);
+      if (maxWidth && maxWidth[1]) {
+        const width = parseInt(maxWidth[1]);
+        if (width && !Number.isNaN(width) && Number.isFinite(width)) {
+          img.width = width;
+        }
+      }
+      img.setAttribute('src', `data:image/svg+xml,${encodeURIComponent(svg)}`);
+      return img;
+    }
+
+    async function makeMermaidError(text) {
+      let errorMessage = '';
+      try {
+        await mermaid.parse(text);
+      } catch (err) {
+        errorMessage = `${err}`;
+      }
+
+      const result = document.createElement('details');
+      const summary = document.createElement('summary');
+      const pre = document.createElement('pre');
+      const code = document.createElement('code');
+      code.innerText = text;
+      pre.appendChild(code);
+      summary.appendChild(pre);
+      result.appendChild(summary);
+
+      const warning = document.createElement('pre');
+      warning.innerText = errorMessage;
+      result.appendChild(warning);
+      return result;
+    }
+
+    async function renderOneMarmaid(src) {
+      const id = `jp-mermaid-${_nextMermaidId++}`;
+      const parent = src.parentNode;
+      let raw = src.textContent.trim();
+      const el = document.createElement("div");
+      el.style.visibility = "hidden";
+      document.body.appendChild(el);
+      let result = null;
+      try {
+        const { svg } = await mermaid.render(id, raw, el);
+        result = makeMermaidImage(svg);
+      } catch (err) {
+        parent.classList.add("jp-mod-warning");
+        result = await makeMermaidError(raw);
+      } finally {
+        el.remove();
+      }
+      parent.classList.add("jp-RenderedMermaid");
+      parent.appendChild(result);
+    }
+
+    void Promise.all([...diagrams].map(renderOneMarmaid));
+  });
+</script>
+<style>
+  .jp-RenderedMarkdown .jp-Mermaid:not(.jp-RenderedMermaid) {
+    display: none;
+  }
+  .jp-RenderedMarkdown .jp-RenderedMermaid.jp-mod-warning {
+    width: auto;
+    padding: 10px;
+    border: var(--jp-border-width) solid var(--jp-warn-color2);
+    border-radius: var(--jp-border-radius);
+    color: var(--jp-ui-font-color1);
+    font-size: var(--jp-ui-font-size1);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .jp-RenderedMarkdown .jp-RenderedMermaid.jp-mod-warning details > pre {
+    margin-top: 1em;
+  }
+  .jp-RenderedMarkdown .jp-RenderedMermaid.jp-mod-warning summary {
+    color: var(--jp-warn-color2);
+  }
+  .jp-RenderedMarkdown .jp-RenderedMermaid.jp-mod-warning summary > pre {
+    display: inline-block;
+  }
+  .jp-RenderedMermaid > .mermaid {
+    display: none;
+  }
+</style>
+<!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <div  class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># 영남 원자료 파일 목록 생성</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;D:/마케팅 공용/원자료/연도별원자료/영남/&#39;</span>
+<span class="n">fnameList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2017</span><span class="p">,</span> <span class="mi">2023</span><span class="p">))</span>
+<span class="n">tail</span> <span class="o">=</span> <span class="s1">&#39;영남판매현황(영업데이터분석엑셀).xlsx&#39;</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div  class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># 본사 원자료 파일 목록 생성</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;D:/마케팅 공용/원자료/연도별원자료/본사/&#39;</span>
+<span class="n">fnameList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2006</span><span class="p">,</span> <span class="mi">2023</span><span class="p">))</span>
+<span class="n">tail</span> <span class="o">=</span> <span class="s1">&#39;본사판매현황(영업데이터분석).csv&#39;</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div  class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># 원자료 파일 목록 생성</span>
+<span class="n">nlist</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnameList</span><span class="p">:</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="o">+</span> <span class="n">tail</span>
+    <span class="n">nlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="n">nlist</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div  class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -15114,18 +15282,43 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># CSV 파일 전처리</span>
 <span class="c1"># 엑셀로 만든 CSV 파일 인코딩을 엑셀에서 UTF-8로 저장해도 UTF-8 이나 EUC-KR 로 인코딩할 때 에러 발생</span>
 <span class="c1"># CP949로 인코딩 성공</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">columns</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;일자&#39;</span><span class="p">,</span> <span class="s1">&#39;품목구분&#39;</span><span class="p">,</span> <span class="s1">&#39;품목코드&#39;</span><span class="p">,</span> <span class="s1">&#39;품목명&#39;</span><span class="p">,</span> <span class="s1">&#39;규격&#39;</span><span class="p">,</span> <span class="s1">&#39;수량&#39;</span><span class="p">,</span> <span class="s1">&#39;단위&#39;</span><span class="p">,</span> <span class="s1">&#39;단가&#39;</span><span class="p">,</span> <span class="s1">&#39;공급가&#39;</span><span class="p">,</span> <span class="s1">&#39;합계&#39;</span><span class="p">,</span> <span class="s1">&#39;거래처코드&#39;</span><span class="p">,</span> <span class="s1">&#39;거래처&#39;</span><span class="p">,</span> <span class="s1">&#39;거래처그룹1&#39;</span><span class="p">,</span> <span class="s1">&#39;거래처그룹2&#39;</span><span class="p">,</span> <span class="s1">&#39;담당자&#39;</span><span class="p">,</span> <span class="s1">&#39;개설연도&#39;</span><span class="p">,</span> <span class="s1">&#39;지역구분&#39;</span><span class="p">,</span> <span class="s1">&#39;인센가입&#39;</span><span class="p">,</span> <span class="s1">&#39;품목그룹1&#39;</span><span class="p">,</span> <span class="s1">&#39;품목그룹2&#39;</span><span class="p">,</span> <span class="s1">&#39;인센품목&#39;</span><span class="p">]</span>
+<span class="n">dType</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;일자&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;품목구분&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;품목코드&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;품목명&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;규격&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;수량&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;단위&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;단가&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;공급가&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;합계&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;거래처코드&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;거래처&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;거래처그룹1&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;거래처그룹2&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;담당자&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;개설연도&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;지역구분&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;인센가입&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;품목그룹1&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;품목그룹2&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="s1">&#39;인센품목&#39;</span><span class="p">:</span><span class="nb">str</span>
+<span class="p">}</span>
 
 <span class="k">def</span> <span class="nf">clean_file</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">replace</span><span class="p">:</span>
         <span class="n">save</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">[</span><span class="n">fname</span><span class="p">,</span> <span class="n">ftype</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+    
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">skipfooter</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dType</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">ftype</span> <span class="o">==</span> <span class="s1">&#39;xlsx&#39;</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">col_check</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">skipfooter</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dType</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">check</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">replace</span><span class="p">:</span>
             <span class="n">fileName</span> <span class="o">=</span> <span class="n">fname</span><span class="o">+</span><span class="s1">&#39;_cleaned.&#39;</span><span class="o">+</span><span class="n">ftype</span>
@@ -15138,15 +15331,16 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
         <span class="k">return</span> <span class="n">df</span>
 
     <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error&#39;</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fileName</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;CP949&#39;</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">col_check</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">check</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ex</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">col_check</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
     <span class="n">colList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">colList</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;Unnamed:&quot;</span> <span class="ow">in</span> <span class="n">col</span><span class="p">:</span>  <span class="c1"># 이름이 없는 칼럼 삭제</span>
@@ -15160,12 +15354,8 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
             <span class="n">new</span> <span class="o">=</span> <span class="n">col</span>
         <span class="n">newcolList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">newcolList</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span>
-
-
-<span class="n">fileName</span> <span class="o">=</span> <span class="s1">&#39;2006_2022.csv&#39;</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">clean_file</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span>
-<span class="n">df</span>
 </pre></div>
 
      </div>
@@ -15181,12 +15371,13 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">database_str</span> <span class="o">=</span> <span class="s1">&#39;database&#39;</span>
-<span class="n">username_str</span> <span class="o">=</span> <span class="s1">&#39;username&#39;</span>
-<span class="n">password_str</span> <span class="o">=</span> <span class="s1">&#39;password&#39;</span>
-<span class="n">host_str</span> <span class="o">=</span> <span class="s1">&#39;host&#39;</span>
-<span class="n">port_str</span> <span class="o">=</span> <span class="s1">&#39;portnumber&#39;</span>
-<span class="n">tablename_str</span> <span class="o">=</span> <span class="s1">&#39;tablename&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dfList</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">clean_file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">dfList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">ndf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfList</span><span class="p">)</span>
+<span class="n">ndf</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;test.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span>
+<span class="n">ndf</span>
 </pre></div>
 
      </div>
@@ -15202,8 +15393,15 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_table</span><span class="p">(</span><span class="n">tablename_str</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
-<span class="n">df</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;D:/마케팅 공용/원자료/CSV/&#39;</span>
+<span class="n">fNameList</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2006-2022본사판매현황(영업데이터분석).csv&#39;</span><span class="p">,</span> <span class="s1">&#39;2017-2022영남판매현황(영업데이터분석).csv&#39;</span><span class="p">]</span>
+<span class="n">fullList</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="o">+</span><span class="n">fNameList</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">path</span><span class="o">+</span><span class="n">fNameList</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">dflist</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fullList</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dType</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">dflist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">ndf</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dflist</span><span class="p">)</span>
+<span class="n">ndf</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;test.csv&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15219,33 +15417,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># 해당 모듈들이 설치되어 있어야 함</span>
-<span class="c1"># sqlalchemy, pymssql</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">select</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">text</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.engine.url</span> <span class="kn">import</span> <span class="n">URL</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.types</span> <span class="kn">import</span> <span class="n">NVARCHAR</span>
-
-<span class="n">db_url</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;database&#39;</span><span class="p">:</span> <span class="n">database_str</span><span class="p">,</span>
-    <span class="s1">&#39;drivername&#39;</span><span class="p">:</span> <span class="s1">&#39;mssql+pymssql&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">username_str</span><span class="p">,</span>
-    <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="n">password_str</span><span class="p">,</span>
-    <span class="s1">&#39;host&#39;</span><span class="p">:</span> <span class="n">host_str</span><span class="p">,</span>
-    <span class="s1">&#39;port&#39;</span><span class="p">:</span> <span class="n">port_str</span><span class="p">,</span>
-    <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;charset&#39;</span><span class="p">:</span> <span class="s1">&#39;UTF-8&#39;</span><span class="p">},</span>  <span class="c1"># the key-point setting</span>
-<span class="p">}</span>
-
-<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">URL</span><span class="p">(</span><span class="o">**</span><span class="n">db_url</span><span class="p">),</span> <span class="n">echo</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="c1"># engine = create_engine(&#39;mssql+pymssql://username:password@host/database&#39;, echo=True)</span>
-<span class="c1"># session 생성</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_table</span><span class="p">(</span><span class="n">tablename_str</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
-<span class="n">df</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ndf</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;test.csv&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15259,92 +15431,6 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Table 생성 테스트</span>
-
-<span class="kn">from</span> <span class="nn">sqlalchemy.types</span> <span class="kn">import</span> <span class="n">NVARCHAR</span><span class="p">,</span> <span class="n">DATE</span><span class="p">,</span> <span class="n">Integer</span>
-<span class="n">dataTypeList</span> <span class="o">=</span> <span class="p">[</span><span class="n">NVARCHAR</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">columnList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
-<span class="n">dTypeDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">columnList</span><span class="p">,</span> <span class="n">dataTypeList</span><span class="p">))</span>
-<span class="n">dTypeDict</span><span class="p">[</span><span class="s1">&#39;일자&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DATE</span>
-<span class="n">dTypeDict</span><span class="p">[</span><span class="s1">&#39;단가&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Integer</span>
-<span class="n">dTypeDict</span><span class="p">[</span><span class="s1">&#39;공급가&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Integer</span>
-<span class="n">dTypeDict</span><span class="p">[</span><span class="s1">&#39;합계&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Integer</span>
-<span class="n">dTypeDict</span><span class="p">[</span><span class="s1">&#39;수량&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Integer</span>
-
-<span class="n">df</span> <span class="o">=</span> <span class="n">sales_all</span>
-<span class="n">conn</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-<span class="n">df</span><span class="o">.</span><span class="n">to_sql</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">tablename_str</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="p">,</span>
-          <span class="n">if_exists</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dTypeDict</span><span class="p">)</span>
-<span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="n">sales_sample</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_table</span><span class="p">(</span><span class="n">tablename_str</span><span class="p">,</span> <span class="n">con</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div  class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># 조건에 해당하는 데이터 뽑기</span>
-<span class="n">newdf</span> <span class="o">=</span> <span class="n">sales_sample</span><span class="p">[</span><span class="n">sales_sample</span><span class="p">[</span><span class="s1">&#39;단가&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1000000</span><span class="p">]</span>
-<span class="n">newdf</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="s1">&#39;sample.xlsx&#39;</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div  class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pymssql</span>
-
-<span class="c1"># DB 서버 주소</span>
-<span class="n">server</span> <span class="o">=</span> <span class="n">host_str</span>
-<span class="c1"># 데이터 베이스 이름</span>
-<span class="n">database</span> <span class="o">=</span> <span class="n">database_str</span>
-<span class="c1"># 접속 유저명</span>
-<span class="n">username</span> <span class="o">=</span> <span class="n">username_str</span>
-<span class="c1"># 접속 유저 패스워드</span>
-<span class="n">password</span> <span class="o">=</span> <span class="n">password_str</span>
-<span class="c1"># 조회할 데이터 테이블</span>
-<span class="n">table</span> <span class="o">=</span> <span class="n">tablename_str</span>
-
-
-<span class="c1"># MSSQL 접속</span>
-<span class="n">cnxn</span> <span class="o">=</span> <span class="n">pymssql</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">database</span><span class="p">)</span>
-<span class="n">cursor</span> <span class="o">=</span> <span class="n">cnxn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-
-<span class="c1"># SQL문 실행</span>
-<span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM &#39;</span> <span class="o">+</span> <span class="n">table</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div  class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>jupyter<span class="w"> </span>nbconvert<span class="w"> </span>--to<span class="w"> </span>html<span class="w"> </span>csv_cleaning.ipynb
@@ -15353,28 +15439,6 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
      </div>
 </div>
 </div>
-</div>
-
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-
-
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>[NbConvertApp] Converting notebook csv_cleaning.ipynb to html
-[NbConvertApp] Writing 625375 bytes to csv_cleaning.html
-</pre>
-</div>
-</div>
-
-</div>
-
 </div>
 
 </div>
